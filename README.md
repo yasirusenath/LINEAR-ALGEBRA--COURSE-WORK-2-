@@ -5,6 +5,7 @@
 This project demonstrates how linear algebra concepts are applied in machine learning through grayscale image classification. It is designed as a beginner-friendly guide for understanding the relationship between mathematical operations and practical machine learning models.
 
 Using three classes of grayscale images, the project explores how **Principal Component Analysis (PCA)** and **Singular Value Decomposition (SVD)** reduce image dimensionality before applying **Multinomial Logistic Regression** for multi-class classification.
+<img width="1536" height="1024" alt="From Pixels to Student Predictions" src="https://github.com/user-attachments/assets/494f0594-b4da-4ae3-a95d-e764f7e5c106" />
 
 ## Project Workflow
 
