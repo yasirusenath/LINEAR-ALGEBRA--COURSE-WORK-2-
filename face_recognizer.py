@@ -1,4 +1,3 @@
-%%writefile /content/drive/MyDrive/la/face_recognizer.py
 
 import cv2
 import numpy as np
