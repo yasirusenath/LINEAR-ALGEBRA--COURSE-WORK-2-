@@ -27,9 +27,9 @@ class FaceRecognizerWrapper:
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
         self.X_train_pca, self.X_test_pca = None, None
 
-    def load_and_preprocess_data(self, dataset_dir):
+    def load_and_preprocess_data(self, DATASET_DIR):
         """Reads images, resizes, flattens into X matrix, and creates label array y."""
-        dataset_path = Path(dataset_dir)
+        dataset_path = Path(DATASET_DIR)
         valid_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tif', '.tiff', '.jfif'}
         
         data_list = []
@@ -44,22 +44,26 @@ class FaceRecognizerWrapper:
             
             for img_path in class_folder.iterdir():
                 if img_path.suffix.lower() in valid_extensions:
-                    # Read image as grayscale
                     img = cv2.imread(str(img_path), cv2.IMREAD_GRAYSCALE)
                     if img is not None:
-                        # Resize to specified dimensions
                         img_resized = cv2.resize(img, (self.img_size, self.img_size))
-                        # Flatten from 300x300 to 90000x1 vector
                         img_flattened = img_resized.flatten()
                         
                         data_list.append(img_flattened)
                         labels_list.append(idx)
                         path_list.append(str(img_path))
                         
-        self.X = np.array(data_list, dtype=np.float32) / 255.0  # Normalized pixels
+        # Safeguard: Raise a clear error if no images were loaded
+        if len(data_list) == 0:
+            raise ValueError(
+                f"Error: No images were loaded from '{dataset_path}'. "
+                f"Please ensure folders 'student_1', 'student_2', and 'student_3' exist inside this directory."
+            )
+                        
+        self.X = np.array(data_list, dtype=np.float32) / 255.0  
         self.y = np.array(labels_list, dtype=np.int32)
         self.image_paths = path_list
-        print(f"Loaded {self.X.shape[0]} total images with feature shape {self.X.shape[1]}")
+        print(f"Successfully loaded {self.X.shape[0]} total images with feature shape {self.X.shape[1]}")
 
     def split_data(self, test_size=0.20):
         """Performs a stratified train/test split."""
