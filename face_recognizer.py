@@ -150,46 +150,56 @@ class FaceRecognizerWrapper:
         print("Total images:", len(self.X))
         print("Feature shape:", self.X.shape)
 
-    def split_data(self, test_size=0.20):
+    def split_data(self, train_size=0.80, test_size=0.20):
+    """Split dataset into training and testing sets."""
 
-        if self.X is None:
-            raise ValueError(
-                "Load the dataset before splitting the data."
-            )
+    if self.X is None or self.y is None:
+        raise ValueError("Load the dataset before splitting.")
 
-        # Each class needs at least one training and test image.
-        class_counts = np.bincount(self.y)
-        n_classes = len(self.class_names)
-        n_samples = len(self.y)
-
-        n_test = int(np.ceil(n_samples * test_size))
-        n_train = n_samples - n_test
-
-        if (
-            n_test < n_classes
-            or n_train < n_classes
-            or np.min(class_counts) < 2
-        ):
-            raise ValueError(
-                "Not enough images for a stratified train/test split. "
-                "Add more images to each person folder or adjust test_size."
-            )
-
-        (
-            self.X_train,
-            self.X_test,
-            self.y_train,
-            self.y_test
-        ) = train_test_split(
-            self.X,
-            self.y,
-            test_size=test_size,
-            random_state=self.seed,
-            stratify=self.y
+    if not np.isclose(train_size + test_size, 1.0):
+        raise ValueError(
+            "train_size and test_size must add up to 1.0."
         )
 
-        print("Training set:", self.X_train.shape)
-        print("Testing set:", self.X_test.shape)
+    if train_size <= 0 or test_size <= 0:
+        raise ValueError("Both sizes must be greater than zero.")
+
+    # Check that each class has enough images.
+    class_counts = np.bincount(self.y)
+    n_classes = len(self.class_names)
+    n_samples = len(self.y)
+
+    n_train = int(np.floor(n_samples * train_size))
+    n_test = n_samples - n_train
+
+    if (
+        n_train < n_classes
+        or n_test < n_classes
+        or np.min(class_counts) < 2
+    ):
+        raise ValueError(
+            "Not enough images for a stratified split. "
+            "Add more images to each student folder."
+        )
+
+    (
+        self.X_train,
+        self.X_test,
+        self.y_train,
+        self.y_test
+    ) = train_test_split(
+        self.X,
+        self.y,
+        train_size=train_size,
+        test_size=test_size,
+        random_state=self.seed,
+        stratify=self.y
+    )
+
+    print(f"Training size: {train_size * 100:.0f}%")
+    print(f"Testing size: {test_size * 100:.0f}%")
+    print("Training images:", len(self.X_train))
+    print("Testing images:", len(self.X_test))
 
     def apply_pca_and_train(self):
 
