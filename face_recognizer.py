@@ -1,17 +1,3 @@
-"""Face recognition wrapper for CW2 Tasks 2.1, 2.2, and 2.3.
-
-Expected dataset structure:
-    images/
-        student_1/  image files...
-        student_2/  image files...
-        student_3/  image files...
-
-Task 2.1: load grayscale images, resize to 300x300, flatten to 90,000 values,
-          and split the data into stratified train/test sets.
-Task 2.2: fit PCA using the training split only, transform train/test data,
-          and visualize eigenfaces.
-Task 2.3: train Logistic Regression and evaluate the classifier.
-"""
 
 from pathlib import Path
 
